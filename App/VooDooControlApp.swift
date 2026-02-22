@@ -26,16 +26,34 @@ struct VooDooControlApp: App {
 @MainActor
 class AppState: ObservableObject {
     @Published var selectedTab: Tab = .dashboard
-    @Published var isConnected: Bool = false
-    @Published var lastHeartbeat: Date?
-    @Published var memoryUsage: Double = 0
-    @Published var activeSessions: Int = 0
+    @Published var isConnected: Bool = false {
+        didSet {
+            WidgetDataManager.shared.updateConnectionStatus(isConnected)
+        }
+    }
+    @Published var lastHeartbeat: Date? {
+        didSet {
+            if let date = lastHeartbeat {
+                WidgetDataManager.shared.updateLastHeartbeat(date)
+            }
+        }
+    }
+    @Published var memoryUsage: Double = 0 {
+        didSet {
+            WidgetDataManager.shared.updateMemoryUsage(memoryUsage)
+        }
+    }
+    @Published var activeSessions: Int = 0 {
+        didSet {
+            WidgetDataManager.shared.updateActiveSessions(activeSessions)
+        }
+    }
     @Published var currentError: String?
     
     private var webSocketManager: WebSocketManager?
     
     enum Tab {
-        case dashboard, sessions, files, terminal, status
+        case dashboard, sessions, files, terminal, tools, status, settings
     }
     
     func connect() {

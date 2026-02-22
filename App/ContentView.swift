@@ -42,12 +42,26 @@ struct ContentView: View {
                 }
                 .tag(AppState.Tab.terminal)
             
+            ToolsView()
+                .tabItem {
+                    Image(systemName: "wrench.fill")
+                    Text("Tools")
+                }
+                .tag(AppState.Tab.tools)
+            
             StatusView()
                 .tabItem {
                     Image(systemName: "gauge.with.dots.needle.67percent")
                     Text("Status")
                 }
                 .tag(AppState.Tab.status)
+            
+            SettingsView()
+                .tabItem {
+                    Image(systemName: "gearshape.fill")
+                    Text("Settings")
+                }
+                .tag(AppState.Tab.settings)
         }
         .tint(.violet)
         .onAppear {
