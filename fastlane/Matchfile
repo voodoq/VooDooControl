@@ -1,0 +1,12 @@
+# Matchfile
+# Code signing configuration
+
+git_url("https://github.com/yourusername/certificates.git")
+storage_mode("git")
+
+type("development")
+app_identifier(["com.voodoo.control", "com.voodoo.control.widget"])
+username("your-apple-id@example.com")
+
+# For CI/CD
+readonly(is_ci)

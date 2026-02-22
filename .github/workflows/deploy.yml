@@ -1,0 +1,48 @@
+name: Deploy to App Store
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '16.0'
+    
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2'
+        bundler-cache: true
+    
+    - name: Setup fastlane
+      run: |
+        gem install fastlane
+    
+    - name: Install certificates
+      env:
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      run: |
+        fastlane match appstore --readonly
+    
+    - name: Build and upload
+      env:
+        APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+        TEAM_ID: ${{ secrets.TEAM_ID }}
+      run: |
+        fastlane release
+    
+    - name: Upload IPA
+      uses: actions/upload-artifact@v4
+      with:
+        name: VooDooControl.ipa
+        path: build/VooDooControl.ipa

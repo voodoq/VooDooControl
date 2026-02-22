@@ -6,6 +6,33 @@ A Liquid Glass iOS app for managing OpenClaw — built with SwiftUI for iOS 26.
 ![Swift](https://img.shields.io/badge/Swift-6-orange)
 ![SwiftUI](https://img.shields.io/badge/SwiftUI-Liquid%20Glass-green)
 
+## 🚀 Quick Start (For Windows Users)
+
+Since you're on Windows and can't build iOS apps directly, you have **three options**:
+
+### Option 1: GitHub Actions (FREE - Recommended)
+Automatic builds on Apple's servers. No Mac needed.
+
+1. Push this repo to GitHub
+2. Builds automatically on every push
+3. Download the `.ipa` file
+
+**See:** [CI_CD_SETUP.md](CI_CD_SETUP.md)
+
+### Option 2: Cloud Mac (Full Control)
+Rent a Mac in the cloud, control it remotely from Windows.
+
+1. Rent Mac from MacStadium/AWS (~$1/hour)
+2. Run setup script once
+3. Build remotely via SSH
+
+**See:** [CI_CD_SETUP.md](CI_CD_SETUP.md#option-2-cloud-mac-more-control)
+
+### Option 3: Get a Mac
+Buy/borrow any Mac (even old Mac Mini works).
+
+---
+
 ## Project Structure
 
 ```
@@ -15,34 +42,45 @@ VooDooControl/
 │   ├── ContentView.swift           # Tab container + Dashboard
 │   └── generate_xcode_project.sh   # Project generator
 ├── DesignSystem/
-│   ├── Glass.swift                 # Liquid Glass materials (thick/thin/ultraThin)
-│   └── Animations.swift            # Spring transitions, pulse, shimmer, shake
+│   ├── Glass.swift                 # Liquid Glass materials
+│   └── Animations.swift            # Spring transitions
 ├── Features/
 │   ├── Sessions/
-│   │   └── SessionsView.swift      # Session list + chat interface
+│   │   └── SessionsView.swift      # Session list + chat
 │   ├── Files/
-│   │   └── FilesView.swift         # File browser + code editor
+│   │   └── FilesView.swift         # File browser + editor
 │   ├── Terminal/
 │   │   ├── TerminalView.swift      # Command execution
-│   │   └── CommandActivity.swift   # Live Activity for running commands
+│   │   └── CommandActivity.swift   # Live Activity
 │   ├── Status/
-│   │   └── StatusView.swift        # Health monitoring + Swift Charts
+│   │   └── StatusView.swift        # Health monitoring
 │   ├── Tools/
-│   │   └── ToolsView.swift         # Quick actions + web search
+│   │   └── ToolsView.swift         # Quick actions
 │   └── Settings/
 │       └── SettingsView.swift      # App configuration
 ├── Services/
-│   ├── OpenClawAPI.swift           # REST client for Gateway
-│   ├── WebSocketManager.swift      # Real-time WebSocket connection
-│   └── WidgetDataManager.swift     # App Groups data sharing
+│   ├── OpenClawAPI.swift           # REST client
+│   ├── WebSocketManager.swift      # Real-time WebSocket
+│   └── WidgetDataManager.swift     # App Groups sharing
 ├── Models/
 │   └── Models.swift                # SwiftData models
 ├── Widgets/
-│   └── VooDooWidgets.swift         # Home Screen + Lock Screen widgets
-├── Info.plist                      # App configuration
-├── VooDooControl.entitlements      # App Groups for widgets
+│   └── VooDooWidgets.swift         # Home/Lock Screen widgets
+├── scripts/                        # Build automation
+│   ├── setup_cloud_mac.sh
+│   ├── build.sh
+│   └── remote_build.sh
+├── .github/workflows/              # GitHub Actions
+│   ├── build.yml
+│   └── deploy.yml
+├── fastlane/                       # App Store deployment
+│   ├── Fastfile
+│   ├── Appfile
+│   └── Matchfile
+├── Info.plist
+├── VooDooControl.entitlements
 ├── README.md
-└── .gitignore
+└── CI_CD_SETUP.md                  # ⭐️ Build setup guide
 ```
 
 ## Features
@@ -68,29 +106,27 @@ VooDooControl/
 ### Terminal
 - Command execution with history
 - Live Activity showing progress on Lock Screen/Dynamic Island
-- Quick command shortcuts (openclaw status, git status, etc.)
+- Quick command shortcuts
 - Copy output to clipboard
-- Favorite commands
 
 ### Tools
 - Web search integration
 - URL content fetching
 - Git operations (status, pull, commit, push)
 - Gateway management (clear memory, restart)
-- Recent actions history
 
 ### Status
-- Gateway health monitoring with charts
-- 24-hour memory usage (Swift Charts)
+- Gateway health monitoring with Swift Charts
+- 24-hour memory usage
 - Channel toggles (Telegram, Discord, WhatsApp)
-- Cron job management with scheduling
+- Cron job management
 - Live system logs
 
 ### Settings
 - Gateway connection configuration
 - Theme selection (Auto/Light/Dark)
 - Haptic intensity (Light/Medium/Heavy)
-- Notification preferences per event type
+- Notification preferences
 - Test connection button
 
 ## Design System
@@ -101,15 +137,13 @@ VooDooControl/
 .glassBackground(.thin)       // Cards and lists
 .glassBackground(.ultraThin)  // Subtle backgrounds
 .glassCard()                   // Pre-styled glass cards
-.glassCapsule()                // Button and toggle backgrounds
+.glassCapsule()                // Buttons and toggles
 ```
 
 ### Animations
 ```swift
-.glassSpring    // UI interactions (0.4s, damping: 0.8)
-.glassQuick     // Micro-interactions (0.2s)
-.glassBounce    // Playful elements (0.5s, damping: 0.6)
-.glassSmooth    // Transitions (0.3s ease)
+.glassSpring    // UI interactions
+.glassQuick     // Micro-interactions
 .pulse()        // Status indicators
 .shimmer()      // Loading states
 .shake()        // Error feedback
@@ -120,67 +154,38 @@ VooDooControl/
 - Success: Green `#30D158`
 - Warning: Yellow `#FFD60A`
 - Error: Red `#FF453A`
-- Text uses `.primary`/`.secondary` for vibrancy
 
-## Requirements
+## Building
 
-- iOS 26+
-- Xcode 16+
-- Swift 6
-- OpenClaw Gateway running locally or remotely
-
-## Setup
-
-### 1. Create Xcode Project
+### From macOS (Local)
 
 ```bash
+# Open in Xcode and build
 cd VooDooControl
-bash App/generate_xcode_project.sh
+open VooDooControl.xcodeproj
+
+# Or command line
+./scripts/build.sh debug
 ```
 
-Or manually:
-1. Open Xcode 16
-2. File → New → Project
-3. Select iOS App template
-4. Name: "VooDooControl"
-5. Interface: SwiftUI
-6. Language: Swift
-7. Enable SwiftData
+### From Windows (Remote)
 
-### 2. Configure App Groups (Required for Widgets)
+```bash
+# Configure remote_build.sh with your cloud Mac IP
+./scripts/remote_build.sh build
+./scripts/remote_build.sh download
+```
 
-1. Select project → VooDooControl target
-2. Signing & Capabilities → + Capability
-3. Add "App Groups"
-4. Create group: `group.com.voodoo.control`
-5. Repeat for widget extension target
+### GitHub Actions (Automatic)
 
-### 3. Add Files to Project
-
-Drag all files from the `VooDooControl` folder into your Xcode project:
-- Preserve folder structure
-- Check "Create groups"
-- Add to target: VooDooControl
-
-### 4. Build and Run
-
-1. Select iPhone 16 Pro simulator or your device
-2. Press ⌘+R to build and run
-
-## Configuration
-
-On first launch, go to **Settings** tab and configure:
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| Server URL | `ws://127.0.0.1:18789` | OpenClaw Gateway URL |
-| Auth Token | (empty) | Your gateway auth token |
-| Theme | Auto | Follows system or manual override |
-| Haptics | Medium | Feedback intensity |
+```bash
+# Just push to GitHub
+git push origin main
+# Build starts automatically
+```
 
 ## Architecture
 
-### Data Flow
 ```
 UI (SwiftUI) 
     ↕
@@ -191,89 +196,32 @@ Services (API + WebSocket)
 OpenClaw Gateway
 ```
 
-### Real-time Updates
-- WebSocket connection for live data
-- Combine publishers for reactive UI
-- SwiftData for persistence
-- App Groups for widget data sharing
-
-### Key Components
-
-**AppState** — Central state management
-- Connection status
-- Memory/session counts
-- Error handling
-
-**OpenClawAPI** — REST client
-- Status, sessions, files, commands
-- Async/await pattern
-
-**WebSocketManager** — Real-time connection
-- Automatic reconnection with backoff
-- Push notification handling
-
 ## Widgets
 
-### Home Screen
-- **Small**: Connection status + session count
-- **Medium**: Full status + memory chart + quick actions
+- **Home Screen**: Small status, Medium with charts
+- **Lock Screen**: Circular/rectangular widgets
+- **Live Activity**: Command progress in Dynamic Island
 
-### Lock Screen
-- **Circular**: Connection dot + session count
-- **Rectangular**: Status + last sync time
-- **Inline**: Compact session count
+## Requirements
 
-### Live Activity
-- Shows when commands are running
-- Appears on Lock Screen and Dynamic Island
-- Progress bar + elapsed time + output preview
+- iOS 26+
+- Xcode 16+ (on build machine)
+- Swift 6
+- OpenClaw Gateway
 
-## Shortcuts & Siri
+## Stats
 
-Siri phrases supported:
-- "Check my OpenClaw status"
-- "Send message to my main session"
-- "Run git status in VooDoo"
-- "What's my session count?"
-
-## Security
-
-- Auth token stored in Keychain
-- App Groups for secure data sharing
-- Local network access for gateway connection
-- HTTPS support for remote gateways
-
-## Troubleshooting
-
-### Can't connect to gateway
-1. Verify gateway is running: `openclaw status`
-2. Check URL in Settings (default: `ws://127.0.0.1:18789`)
-3. Test connection button in Settings
-4. Check firewall settings for port 18789
-
-### Widgets not updating
-1. Verify App Groups capability is enabled
-2. Check group ID matches: `group.com.voodoo.control`
-3. Background refresh must be enabled
-
-### Live Activity not showing
-1. Requires iOS 16.1+
-2. Enable in Settings → Notifications → VooDoo Control
-3. Check "Live Activities" toggle
+- **Total Code:** ~4,500 lines
+- **SwiftUI Views:** 14
+- **Services:** 3
+- **Models:** 3 SwiftData entities
+- **Widgets:** 2
+- **Live Activities:** 1
 
 ## License
 
 MIT License — built with 💜 by VooDoo
 
-## Contributing
-
-This is a personal project, but feel free to fork and customize for your own OpenClaw setup.
-
 ---
 
-**Total Code:** ~3,500 lines of Swift
-**SwiftUI Views:** 14
-**Services:** 3
-**Models:** 3 SwiftData entities
-**Widgets:** 2 (Home + Lock Screen)
-**Live Activities:** 1 (Command progress)
+**Windows users:** See [CI_CD_SETUP.md](CI_CD_SETUP.md) for detailed build instructions!
